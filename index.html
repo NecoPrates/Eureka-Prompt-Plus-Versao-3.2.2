@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eureka Prompt Plus V3.2.2 - Master Edition</title>
+    <style>
+        :root { --primary: #2980b9; --accent: #e67e22; --dark: #2c3e50; --light: #f4f7f6; --success: #27ae60; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: var(--light); padding: 20px; color: #333; margin: 0; }
+        .container { max-width: 1300px; margin: auto; display: grid; grid-template-columns: 1fr 320px; gap: 20px; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1 { color: var(--dark); text-align: center; border-bottom: 2px solid var(--primary); padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .full-width { grid-column: span 2; }
+        label { font-weight: bold; color: var(--primary); display: flex; align-items: center; margin-bottom: 5px; }
+        .help-btn { cursor: pointer; color: #7f8c8d; margin-left: 8px; border: 1px solid #ccc; border-radius: 50%; width: 18px; height: 18px; display: inline-flex; justify-content: center; align-items: center; font-size: 12px; }
+        select { width: 100%; padding: 8px; border-radius: 5px; border: 1px solid #ddd; margin-bottom: 8px; background: #f9f9f9; }
+        textarea { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 14px; }
+        
+        /* Dimensões solicitadas */
+        #roteiro, #objetivo, #panorama { height: 150px; }
+        #persona, #modelo, #transformar { height: 100px; }
+
+        .footer-disclaimer { font-size: 11px; color: #7f8c8d; text-align: center; margin-top: 25px; font-style: italic; }
+        .button-group { display: flex; gap: 10px; margin-top: 15px; }
+        button { flex: 1; padding: 15px; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        .btn-generate { background-color: var(--primary); color: white; }
+        .btn-copy { background-color: var(--success); color: white; display: none; }
+        #finalPrompt { background-color: #1c2833; color: #ecf0f1; padding: 20px; border-radius: 8px; white-space: pre-wrap; font-family: 'Courier New', monospace; margin-top: 20px; border-left: 5px solid var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="card">
+        <h1>Eureka Prompt Plus V3.2.2</h1>
+        <div class="grid">
+            <!-- P - PERSONA -->
+            <div>
+                <label>Persona (P) <span class="help-btn" onclick="ajuda('persona')">?</span></label>
+                <select onchange="preencher('persona', this.value)">
+                    <option value="">-- 10 Exemplos de Persona --</option>
+                    <option value="Você é um Pesquisador Sênior Acadêmico especialista em curadoria de dados científicos.">Pesquisador Sênior</option>
+                    <option value="Você é um Mestre em Marketing e Psicologia do Consumidor.">Mestre em Marketing</option>
+                    <option value="Você é um Engenheiro de Software Sênior especialista em Clean Code.">Engenheiro Sênior</option>
+                    <option value="Você é um Professor Socrático que ensina através de perguntas.">Professor Socrático</option>
+                    <option value="Você é um Editor de Livros rigoroso focado em clareza.">Editor de Livros</option>
+                    <option value="Você é um Analista de Dados especializado em insights estratégicos.">Analista de Dados</option>
+                    <option value="Você é um Especialista em Customer Success e empatia.">Customer Success</option>
+                    <option value="Você é um Consultor Jurídico especializado em LGPD.">Consultor Jurídico</option>
+                    <option value="Você é um Coach de Alta Performance e Biohacking.">Coach de Performance</option>
+                    <option value="Você é um Storyteller profissional da Jornada do Herói.">Storyteller</option>
+                </select>
+                <textarea id="persona"></textarea>
+            </div>
+            <!-- M - MODELO -->
+            <div>
+                <label>Modelo (M) <span class="help-btn" onclick="ajuda('modelo')">?</span></label>
+                <select onchange="preencher('modelo', this.value)">
+                    <option value="">-- 10 Exemplos de Formato --</option>
+                    <option value="Lista numerada com Título (negrito), DOI e Por que é relevante.">Lista Acadêmica (DOI)</option>
+                    <option value="Tabela Markdown com colunas para Item e Descrição.">Tabela Markdown</option>
+                    <option value="Estrutura de 10 slides curtos.">Slides</option>
+                    <option value="Formato JSON estrito.">JSON</option>
+                    <option value="Resumo executivo de 500 caracteres.">Sumário Executivo</option>
+                    <option value="Diálogo entre dois especialistas.">Diálogo</option>
+                    <option value="Markdown com cabeçalhos H1 e H2.">Markdown Estruturado</option>
+                    <option value="Formato FAQ com perguntas em negrito.">FAQ</option>
+                    <option value="Código Python com comentários.">Código Comentado</option>
+                    <option value="Roteiro com timestamps [00:00].">Roteiro com Tempo</option>
+                </select>
+                <textarea id="modelo"></textarea>
+            </div>
+            <!-- P - PANORAMA (GRANDE) -->
+            <div class="full-width">
+                <label>Panorama / Contexto (P) <span class="help-btn" onclick="ajuda('panorama')">?</span></label>
+                <select onchange="preencher('panorama', this.value)">
+                    <option value="">-- 10 Exemplos de Contexto --</option>
+                    <option value="Use esta base de transcrição de 3 horas para análise: {{transcricao}}">Transcrição Longa</option>
+                    <option value="O público são engenheiros e executivos com base matemática sólida.">Público Técnico</option>
+                    <option value="Baseie-se na necessidade de criar um estudo de Estatística do básico ao avançado.">Estudo de Estatística</option>
+                    <option value="Considere dados de um curso de R$ 997,00 com garantia de 30 dias.">Dados de Oferta</option>
+                    <option value="Ambiente de conformidade rigorosa e normas de segurança.">Compliance</option>
+                    <option value="Cenário de mercado onde a IA automatiza tarefas operacionais.">Cenário IA</option>
+                    <option value="Marca com tom 'rebelde profissional'.">Tom de Marca</option>
+                    <option value="Público Geração Z, prefere textos visuais e curtos.">Perfil Gen Z</option>
+                    <option value="Contexto para postagem estratégica no LinkedIn.">LinkedIn</option>
+                    <option value="Diferencial: Oferecemos mentoria individual enquanto outros oferecem apenas gravado.">Vantagem Competitiva</option>
+                </select>
+                <textarea id="panorama"></textarea>
+            </div>
+            <!-- R - ROTEIRO (GRANDE) -->
+            <div>
+                <label>Roteiro (R) <span class="help-btn" onclick="ajuda('roteiro')">?</span></label>
+                <select onchange="preencher('roteiro', this.value)">
+                    <option value="">-- 10 Exemplos de Tarefa --</option>
+                    <option value="Liste as 5 melhores teses/artigos de acesso aberto sobre {{tema}}.">Pesquisa Acadêmica</option>
+                    <option value="Escreva um roteiro de Reels de 60 segundos.">Reels</option>
+                    <option value="Crie uma sequência de 5 e-mails de vendas.">E-mails</option>
+                    <option value="Resuma o conteúdo em 5 tópicos acionáveis.">Resumo</option>
+                    <option value="Desenvolva um artigo SEO de 1500 palavras.">Artigo SEO</option>
+                    <option value="Documente as funções do código enviado.">Documentação</option>
+                    <option value="Traduza adaptando gírias para o público de Londres.">Tradução</option>
+                    <option value="Gere 20 títulos magnéticos para YouTube.">Títulos</option>
+                    <option value="Analise o feedback e aponte 3 dores principais.">Análise de Feedback</option>
+                    <option value="Crie um plano de aula do básico ao avançado.">Plano de Aula</option>
+                </select>
+                <textarea id="roteiro"></textarea>
+            </div>
+            <!-- O - OBJETIVO (GRANDE) -->
+            <div>
+                <label>Objetivo (O) <span class="help-btn" onclick="ajuda('objetivo')">?</span></label>
+                <select onchange="preencher('objetivo', this.value)">
+                    <option value="">-- 10 Exemplos de Objetivo --</option>
+                    <option value="Montar uma base de conhecimento confiável para o NotebookLM.">Base NotebookLM</option>
+                    <option value="Converter leads frios em compradores.">Conversão</option>
+                    <option value="Simplificar conceitos complexos para leigos.">Simplificação</option>
+                    <option value="Fornecer informação direta e factual (sem 'encheção de linguiça').">Eficiência</option>
+                    <option value="Reter a audiência nos primeiros 5 segundos.">Retenção</option>
+                    <option value="Criar autoridade imediata no nicho de {{nicho}}.">Autoridade</option>
+                    <option value="Encantar o cliente fazendo-o se sentir compreendido.">Encantamento</option>
+                    <option value="Otimizar a performance do script fornecido.">Otimização</option>
+                    <option value="Provocar um insight profundo sobre {{tema}}.">Insight</option>
+                    <option value="Organizar o caos de informações em um guia estruturado.">Organização</option>
+                </select>
+                <textarea id="objetivo"></textarea>
+            </div>
+            <!-- T - TRANSFORMAR -->
+            <div class="full-width">
+                <label>Transformar (T) <span class="help-btn" onclick="ajuda('transformar')">?</span></label>
+                <select onchange="preencher('transformar', this.value)">
+                    <option value="">-- 10 Exemplos de Refinamento --</option>
+                    <option value="PROIBIDO inventar URLs. Use apenas DOI ou ArXiv. Se não souber, diga 'Não possuo esta informação'.">Segurança Anti-Links (DOI)</option>
+                    <option value="Use tom amigável e profissional; evite jargões.">Tom Amigável</option>
+                    <option value="Revise 3 vezes para eliminar ambiguidades.">Revisão Rigorosa</option>
+                    <option value="Parágrafos de no máximo 4 linhas.">Legibilidade</option>
+                    <option value="Gere 3 variações de títulos com curiosidade.">Variações</option>
+                    <option value="Siga as diretrizes de segurança NIST AI RMF.">Segurança NIST</option>
+                    <option value="Substitua adjetivos por verbos de ação.">Refinamento Copy</option>
+                    <option value="Incorpore uma CTA sutil ao final.">CTA</option>
+                    <option value="Pense como um crítico cético antes de finalizar.">Autocrítica</option>
+                    <option value="Use analogias de engenharia para explicar.">Analogias Técnicas</option>
+                </select>
+                <textarea id="transformar"></textarea>
+            </div>
+        </div>
+
+        <p class="footer-disclaimer">
+            Garantia EUREKA: Este prompt implementa protocolos automáticos de Cadeia de Pensamento (CoT), Árvore de Pensamentos (ToT), Verificação de Fatos (CoVe) e Governança NIST AI RMF.
+        </p>
+
+        <div class="button-group">
+            <button class="btn-generate" onclick="gerarPrompt()">Gerar Prompt Estruturado 🚀</button>
+            <button id="btnCopy" class="btn-copy" onclick="copiarPrompt()">Copiar para Área de Transferência 📋</button>
+        </div>
+
+        <div id="output-area">
+            <div id="finalPrompt">O prompt aparecerá aqui...</div>
+        </div>
+    </div>
+    
+    <div class="card" style="padding: 15px;">
+        <h3 style="font-size: 14px;">📚 Dicas Rápidas</h3>
+        <p style="font-size: 12px; color: #666;">Use <b>{{variável}}</b> no Panorama para marcar dados longos que você colará depois. Em pesquisas científicas, sempre exija o <b>DOI</b>.</p>
+    </div>
+</div>
+
+<script>
+    const explicacoes = {
+        persona: "Persona: Define a identidade da IA para que o tom e vocabulário sejam precisos [6].",
+        modelo: "Modelo: Define a estrutura visual da saída (tabelas, listas, slides) [7].",
+        roteiro: "Roteiro: A tarefa direta. Posicionada após os dados para evitar esquecimento em contextos longos [1].",
+        objetivo: "Objetivo: O resultado esperado. Ajuda a IA a focar no impacto final [7].",
+        panorama: "Panorama: O contexto e dados brutos. Colocado antes das instruções em documentos extensos [1].",
+        transformar: "Transformar: Refinamentos e regras anti-alucinação, como o protocolo DOI [3]."
+    };
+
+    function ajuda(campo) { alert(explicacoes[campo]); }
+    function preencher(id, valor) { if(valor) document.getElementById(id).value = valor; }
+
+    function gerarPrompt() {
+        const p = document.getElementById('persona').value;
+        const r = document.getElementById('roteiro').value;
+        const o = document.getElementById('objetivo').value;
+        const m = document.getElementById('modelo').value;
+        const pan = document.getElementById('panorama').value;
+        const t = document.getElementById('transformar').value;
+
+        // ESTRUTURA CORRIGIDA: Persona -> Dados (Panorama) -> Instruções (R, O, M, T)
+        let res = `### ESTRUTURA P.R.O.M.P.T. ATIVADA\n\n`;
+        if(p) res += `<persona>\n${p}\n</persona>\n\n`;
+        if(pan) res += `<contexto_dados>\n${pan}\n</contexto_dados>\n\n`; // Problema 1: Dados antes
+        
+        res += `## INSTRUÇÕES DE EXECUÇÃO (Prioridade Máxima)\n\n`;
+        if(r) res += `<tarefa>\n${r}\n</tarefa>\n\n`;
+        if(o) res += `<objetivo_final>\n${o}\n</objetivo_final>\n\n`;
+        if(m) res += `<formato_saida>\n${m}\n</formato_saida>\n\n`; // Problema 2: Tag corrigida
+        if(t) res += `<refinamentos_e_seguranca>\n${t}\n</refinamentos_e_seguranca>\n\n`;
+
+        res += `### GARANTIA EUREKA: PROTOCOLOS AVANÇADOS\n`;
+        res += `1. [CoT] Pense passo a passo e execute uma verificação interna antes da resposta.\n`;
+        res += `2. [ToT] Avalie múltiplas fontes de dados e escolha a mais precisa.\n`;
+        res += `3. [CoVe/DOI] Verifique se os links são reais. SE NÃO TIVER O DOI EXATO, NÃO INVENTE URLs. Declare ignorância se necessário.\n`; // Problema 3
+        res += `4. [NIST] Mantenha a integridade factual e evite alucinações.`;
+
+        document.getElementById('finalPrompt').innerText = res;
+        document.getElementById('btnCopy').style.display = 'block';
+
+        if(confirm("Prompt gerado! Deseja salvar o arquivo agora?")) {
+            salvarPrompt(res);
+        }
+    }
+
+    function copiarPrompt() {
+        const texto = document.getElementById('finalPrompt').innerText;
+        navigator.clipboard.writeText(texto).then(() => alert("Copiado!"));
+    }
+
+    function salvarPrompt(texto) {
+        const agora = new Date();
+        const dataStr = agora.toLocaleDateString().replace(/\//g, '-') + "_" + agora.getHours() + "h" + agora.getMinutes();
+        const nome = prompt("Nome do prompt:", "PesquisaEstatística");
+        if(!nome) return;
+        const filename = `EurekaV3.2.2_${nome}_${dataStr}.txt`;
+        const blob = new Blob([texto], { type: "text/plain" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        link.click();
+    }
+</script>
+</body>
+</html>
